@@ -11,8 +11,13 @@ We adopt the pretrained CLIP model from OpenAI's official repository https://git
 ```python
 pip inatall -r requirements.txt
 ```
-## Define a CPP model
-TBD
+## Preparing Data
+Since we use CLIP's image encoder as a frozen backbone, there are two ways to define the networks: i. with backbone inside; ii. without the backbone; which correspond to the following ways of dataset initialization respectively.
+### i. As RGB Images
+It's a regular procedure to train a CPP model using datasets with RGB images when defining the network with backbone inside.
+### ii. As CLIP Features
+To reduce the inference time of frozen pretrained networks, we suggest to preprocess the dataset using CLIP's image encoder and train CPP using a network without the backbone.
+#### Download Preprocessed CLIP Features
 ## Training
 TBD
 ## Evaluating
