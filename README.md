@@ -9,7 +9,7 @@ This paper proposes a novel image clustering pipeline that integrates pre-traine
 ## Install Dependencies
 We adopt the pretrained CLIP model from OpenAI's official repository https://github.com/openai/CLIP. To install all the dependencies, run the following command:
 ```python
-pip inatall -r requirements.txt
+pip install -r requirements.txt
 ```
 ## Preparing Data
 Since we use CLIP's image encoder as a frozen backbone, there are two ways to define the networks: i. with backbone inside; ii. without the backbone; which correspond to the following ways of dataset initialization respectively.
