@@ -6,7 +6,12 @@ by [Tianzhe Chu*](https://tianzhechu.com), [Shengbang Tong*](https://tsb0601.git
 This repo is the official implementation for the paper "Image Clustering via the Principle of Rate Reduction in the Age of Pretrained Models".
 This paper proposes a novel image clustering pipeline that integrates pre-trained models and rate reduction, enhancing clustering accuracy and introducing an effective self-labeling algorithm for unlabeled datasets at scale.
 
+## Version
+
+(2023.6 Version 0) The current version supports standard datasets i.e. CIFAR-10, CIFAR-100, and ImageNet.
+
 ## Install Dependencies
+
 We adopt the pretrained CLIP model from OpenAI's official repository https://github.com/openai/CLIP. To install all the dependencies, run the following command:
 ```python
 pip install -r requirements.txt
@@ -16,7 +21,14 @@ Since we use CLIP's image encoder as a frozen backbone, there are two ways to de
 ### i. As RGB Images
 It's a regular procedure to train a CPP model using datasets with RGB images when defining the network with backbone inside.
 ### ii. As CLIP Features
-To reduce the inference time of frozen pretrained networks, we suggest to preprocess the dataset using CLIP's image encoder and train CPP using a network without the backbone.
+To reduce the inference time of frozen pretrained networks, we suggest to preprocess the dataset using CLIP's image encoder and train a CPPNet using a network without the backbone.
+
+The following command will help to preprocess datasets into CLIP features without shuffling. 
+
+```python
+python ./data/preprocess.py --data cifar10 --path ./data --feature_dir ./cifar10-feature.pt
+```
+
 #### Download Preprocessed CLIP Features
 ## Training
 TBD
