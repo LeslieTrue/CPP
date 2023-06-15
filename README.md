@@ -50,4 +50,21 @@ TBD
 ## Self-Labeling
 TBD
 ## Image2Image
+
 TBD
+
+## Cite
+
+If you find the repo useful or interesting, plz give a star~~ :D
+
+```
+@misc{chu2023image,
+      title={Image Clustering via the Principle of Rate Reduction in the Age of Pretrained Models}, 
+      author={Tianzhe Chu and Shengbang Tong and Tianjiao Ding and Xili Dai and Benjamin David Haeffele and René Vidal and Yi Ma},
+      year={2023},
+      eprint={2306.05272},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
