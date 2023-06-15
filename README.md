@@ -8,7 +8,7 @@ This paper proposes a novel image clustering pipeline that integrates pre-traine
 
 ## Version
 
-(2023.6 Version 0) The current version supports standard datasets i.e. CIFAR-10, CIFAR-100, and ImageNet.
+(2023.6 Version 0) Not yet ready, still updating!
 
 ## Install Dependencies
 
