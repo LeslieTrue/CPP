@@ -1,6 +1,7 @@
 import torch
+import torch.nn as nn
 
-class MLCLoss(torch.nn.Module):
+class MLCLoss(nn.Module):
     def __init__(self, eps=0.01, gamma=1):
         super(MLCLoss, self).__init__()
         self.eps = eps
@@ -36,4 +37,20 @@ class MLCLoss(torch.nn.Module):
         else:
             return total_loss, [discrimn_loss, compress_loss]
 
+
+
+class TotalCodingRate(nn.Module):
+    def __init__(self, eps=0.01):
+        super(TotalCodingRate, self).__init__()
+        self.eps = eps
+        
+    def compute_discrimn_loss(self, W):
+        """Discriminative Loss."""
+        p, m = W.shape  #[d, B]
+        I = torch.eye(p,device=W.device)
+        scalar = p / (m * self.eps)
+        logdet = torch.logdet(I + scalar * W.matmul(W.T))
+        return logdet / 2.
     
+    def forward(self,X):
+        return - self.compute_discrimn_loss(X.T)
