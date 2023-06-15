@@ -26,12 +26,23 @@ To reduce the inference time of frozen pretrained networks, we suggest to prepro
 The following command will help to preprocess datasets into CLIP features without shuffling. 
 
 ```python
-python ./data/preprocess.py --data cifar10 --path ./data --feature_dir ./cifar10-feature.pt
+python ./data/preprocess.py --data imagenet --path ./data --feature_dir ./imagenet-feature.pt
 ```
 
 #### Download Preprocessed CLIP Features
-## Training
+
 TBD
+
+## Training
+Example training command for CIFAR-10
+
+```python
+python main.py --data_dir ./data --bs 1024 --desc train_CPP_CIFAR10\
+ --lr 1e-4 --lr_c 1e-4 --pieta 0.175 --epo 15 --hidden_dim 4096 --z_dim 128 --warmup 50
+```
+
+
+
 ## Evaluating
 TBD
 ## Optimal Number of Clusters Measurement
