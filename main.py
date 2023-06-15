@@ -12,33 +12,26 @@ import torch.optim.lr_scheduler as lr_scheduler
 from torch.cuda.amp import GradScaler, autocast
 from torch.utils.data import DataLoader
 
-from model.CPP_model import CPPNet
+import clip
+from data.dataset import load_dataset
+from model.CPP_model import CPPNet, CPPNet_bb
 from model.sink_distance import SinkhornDistance
 from data.data_utils import FeatureDataset
 from loss.loss_fn import MLCLoss, TotalCodingRate
 from utils import *
 
-# import torchvision
-os.chdir('./metrics')
-# from metrics import utils
-
-# import random, string
-
-# from metrics_cluster import rect_pi_metrics, compute_numerical_rank, spectral_clustering_metrics, feature_detection,     sparsity, numerical_rank_from_singular_values
-# from plot import *
-
 from metrics.clustering import spectral_clustering_metrics
 
-
-
-os.chdir('/comp_robot/daixili/tianzhe/exps/')
-
 parser = argparse.ArgumentParser(description='CPP Training')
+parser.add_argument('--validate_every', type=int, default=10,
+                    help='validate every step')
+parser.add_argument('--data', type=str, default='cifar10',
+                    help='dataset to use')
 parser.add_argument('--hidden_dim', type=int, default=4096,
                     help='dimension of hidden state')
 parser.add_argument('--z_dim', type=int, default=128,
                     help='dimension of subspace feature dimension')
-parser.add_argument('--n_clusters', type=int, default=100,
+parser.add_argument('--n_clusters', type=int, default=10,
                     help='number of subspace clusters to use')
 parser.add_argument('--epo', type=int, default=30,
                     help='number of epochs for training')
@@ -62,7 +55,7 @@ parser.add_argument('--pieta', type=float, default=0.175,
                     help='temperature for gumble softmax (default: 1)')
 parser.add_argument('--piiter', type=float, default=5,
                     help='temperature for gumble softmax (default: 1)')
-parser.add_argument('--data_dir', type=str, default='./data/clipfeatures.pt',
+parser.add_argument('--data_dir', type=str, default='./data',
                     help='path to clip feature checkpoint')
 parser.add_argument('--seed', type=int, default=42,
                     help='random seed')
@@ -76,20 +69,15 @@ np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 torch.cuda.manual_seed_all(args.seed)
 
-import clip
-from PIL import Image
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model = CPPNet(input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
+clip_model, preprocess = clip.load("ViT-L/14", device=device)
+model = CPPNet_bb(clip_model.visual, input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
 model = torch.nn.DataParallel(model)
 model_dir = os.path.join(f'./{args.desc}')
 sink_layer = SinkhornDistance(args.pieta, max_iter=args.piiter)
 
-feature_dict = torch.load(args.data_dir)
-clip_features = feature_dict['features']
-clip_labels = feature_dict['ys']  
-
-clip_features_set = FeatureDataset(clip_features, clip_labels)
-train_loader = DataLoader(clip_features_set, batch_size=args.bs, shuffle=True, drop_last=True, num_workers=8)
+dataset = load_dataset(args.data, train=True, path=args.data_dir)
+train_loader = torch.utils.data.DataLoader(dataset, batch_size=args.bs, shuffle=True, num_workers=8, drop_last=True)
 
 criterion = MLCLoss(eps=0.1,gamma=1.0)
 warmup_criterion = TotalCodingRate(eps = 0.1)
@@ -121,8 +109,9 @@ for epoch in range(args.epo):
 
                 Pi_np = Pi.detach().cpu().numpy()
                 
-                if ((step+1) == 200 and epoch > 2 and epoch % 2==0):
-                    acc_lst, nmi_lst, _, _, pred_lst = spectral_clustering_metrics(Pi_np, args.n_clusters, y_np, n_init=1)
+                if ((step+1)%args.validate_every == 0):
+                    acc_lst, nmi_lst, _, _, pred_lst = spectral_clustering_metrics(Pi_np, args.n_clusters, y_np)
+                    print(f"acc: {np.mean(acc_lst)}, nmi: {np.mean(nmi_lst)}")
 
             if warmup_step <= total_wamup_steps:
                 print("warming up")
