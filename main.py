@@ -18,14 +18,16 @@ from data.data_utils import FeatureDataset
 from loss.loss_fn import MLCLoss, TotalCodingRate
 from utils import *
 
-import torchvision
+# import torchvision
 os.chdir('./metrics')
-from metrics import utils
+# from metrics import utils
 
-import random, string
+# import random, string
 
-from metrics_cluster import rect_pi_metrics, compute_numerical_rank, spectral_clustering_metrics, feature_detection,     sparsity, numerical_rank_from_singular_values
-from plot import *
+# from metrics_cluster import rect_pi_metrics, compute_numerical_rank, spectral_clustering_metrics, feature_detection,     sparsity, numerical_rank_from_singular_values
+# from plot import *
+
+from metrics.clustering import spectral_clustering_metrics
 
 
 
