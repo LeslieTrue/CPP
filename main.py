@@ -79,7 +79,9 @@ if args.preprocessed:
 else:
     model = CPPNet_bb(clip_model.visual, input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
 model = torch.nn.DataParallel(model)
-model_dir = os.path.join(f'./{args.desc}')
+model_dir = os.path.join(f'./exps/{args.desc}')
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
 sink_layer = SinkhornDistance(args.pieta, max_iter=args.piiter)
 
 if args.preprocessed:
@@ -127,7 +129,6 @@ for epoch in range(args.epo):
                 print(f"acc: {np.mean(acc_lst)}, nmi: {np.mean(nmi_lst)}")
 
             if warmup_step <= total_wamup_steps:
-                print("warming up")
                 loss = warmup_criterion(z_list)
                 loss_list = [loss.item(), loss.item()]
                 loss_reg = args.pigam * 0.5 * Pi.norm()**2

@@ -1,1 +1,7 @@
-torch
+torch==2.0.0
+matplotlib
+torchvision
+scikit-learn
+tqdm
+numpy
+seaborn

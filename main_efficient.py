@@ -71,10 +71,12 @@ torch.cuda.manual_seed_all(args.seed)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 clip_model, preprocess = clip.load("ViT-L/14", device=device)
-#Switch to CPPNet if using CLIP features i.e. model = CPPNet(input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
+
 model = CPPNet(input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
 model = torch.nn.DataParallel(model)
 model_dir = os.path.join(f'./{args.desc}')
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
 sink_layer = SinkhornDistance(args.pieta, max_iter=args.piiter)
 
 feature_dict = torch.load(args.data_dir)
