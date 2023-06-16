@@ -11,7 +11,7 @@ This paper proposes a novel image clustering pipeline that integrates pre-traine
 ## Version
 
 (2023.6 Version 0) Version 0 finished, currently support training for CIFAR and ImageNet; Optimal Number of Clusters Measurement; Self-labeling. 
-What to Expect: Pretrained checkpoints
+What to Expect in Next Steps: Pretrained checkpoints
 
 ## Install Dependencies
 
