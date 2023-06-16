@@ -51,7 +51,8 @@ python ./data/preprocess.py --data imagenet --path ./data --feature_dir ./imagen
 Step2: Training
 
 ```python
-python main_efficient.py --data_dir imagenet-feature.pt --bs 1024 --desc train_CPP_imagenet --lr 1e-4 --lr_c 1e-4 --pieta 0.12 --epo --hidden_dim 2048 --z_dim 1024 --warmup 2000 --epo 20
+python main_efficient.py --data_dir imagenet-feature.pt --bs 1024 --desc train_CPP_imagenet\
+ --lr 1e-4 --lr_c 1e-4 --pieta 0.12 --epo --hidden_dim 2048 --z_dim 1024 --warmup 2000 --epo 20
 ```
 
 ## More Results
