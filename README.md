@@ -29,10 +29,6 @@ The following command will help to preprocess datasets into CLIP features withou
 python ./data/preprocess.py --data imagenet --path ./data --feature_dir ./imagenet-feature.pt
 ```
 
-#### Download Preprocessed CLIP Features
-
-TBD
-
 ## Training
 Example training command for CIFAR-10
 
@@ -41,30 +37,26 @@ python main.py --data_dir ./data --bs 1024 --desc train_CPP_CIFAR10\
  --lr 1e-4 --lr_c 1e-4 --pieta 0.175 --epo 15 --hidden_dim 4096 --z_dim 128 --warmup 50
 ```
 
-
-
-## Evaluating
-TBD
 ## Optimal Number of Clusters Measurement
-TBD
-## Self-Labeling
-TBD
-## Image2Image
+```python
+python optimalcluster.py
+```
 
-TBD
+## Self-Labeling
+```python
+python labeling.py
+```
 
 ## Cite
 
 If you find the repo useful or interesting, plz give a star~~ :D
 
 ```
-@misc{chu2023image,
-      title={Image Clustering via the Principle of Rate Reduction in the Age of Pretrained Models}, 
-      author={Tianzhe Chu and Shengbang Tong and Tianjiao Ding and Xili Dai and Benjamin David Haeffele and René Vidal and Yi Ma},
-      year={2023},
-      eprint={2306.05272},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@article{chu2023image,
+  title={Image Clustering via the Principle of Rate Reduction in the Age of Pretrained Models},
+  author={Chu, Tianzhe and Tong, Shengbang and Ding, Tianjiao and Dai, Xili and Haeffele, Benjamin David and Vidal, Rene and Ma, Yi},
+  journal={arXiv preprint arXiv:2306.05272},
+  year={2023}
 }
 ```
 

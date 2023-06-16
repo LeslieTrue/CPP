@@ -23,6 +23,8 @@ from utils import *
 from metrics.clustering import spectral_clustering_metrics
 
 parser = argparse.ArgumentParser(description='CPP Training')
+parser.add_argument('--preprocessed', type=bool, default=False,
+                    help='whether the data is preprocessed')
 parser.add_argument('--validate_every', type=int, default=10,
                     help='validate every step')
 parser.add_argument('--data', type=str, default='cifar10',
@@ -71,13 +73,24 @@ torch.cuda.manual_seed_all(args.seed)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 clip_model, preprocess = clip.load("ViT-L/14", device=device)
-model = CPPNet_bb(clip_model.visual, input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
+#Switch to CPPNet if using CLIP features i.e. model = CPPNet(input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
+if args.preprocessed:
+    model = CPPNet(input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
+else:
+    model = CPPNet_bb(clip_model.visual, input_dim=768, hidden_dim = args.hidden_dim, z_dim = args.z_dim).to(device)
 model = torch.nn.DataParallel(model)
 model_dir = os.path.join(f'./{args.desc}')
 sink_layer = SinkhornDistance(args.pieta, max_iter=args.piiter)
 
-dataset = load_dataset(args.data, train=True, path=args.data_dir)
-train_loader = torch.utils.data.DataLoader(dataset, batch_size=args.bs, shuffle=True, num_workers=8, drop_last=True)
+if args.preprocessed:
+    feature_dict = torch.load(args.data_dir)
+    clip_features = feature_dict['features']
+    clip_labels = feature_dict['ys']  
+    clip_feature_set = FeatureDataset(clip_features, clip_labels)
+    train_loader = DataLoader(clip_feature_set, batch_size=args.bs, shuffle=True, drop_last=True, num_workers=8)
+else:
+    dataset = load_dataset(args.data, train=True, path=args.data_dir)
+    train_loader = torch.utils.data.DataLoader(dataset, batch_size=args.bs, shuffle=True, num_workers=8, drop_last=True)
 
 criterion = MLCLoss(eps=0.1,gamma=1.0)
 warmup_criterion = TotalCodingRate(eps = 0.1)
@@ -109,9 +122,9 @@ for epoch in range(args.epo):
 
                 Pi_np = Pi.detach().cpu().numpy()
                 
-                if ((step+1)%args.validate_every == 0):
-                    acc_lst, nmi_lst, _, _, pred_lst = spectral_clustering_metrics(Pi_np, args.n_clusters, y_np)
-                    print(f"acc: {np.mean(acc_lst)}, nmi: {np.mean(nmi_lst)}")
+            if ((step+1)%args.validate_every == 0):
+                acc_lst, nmi_lst, _, _, pred_lst = spectral_clustering_metrics(Pi_np, args.n_clusters, y_np)
+                print(f"acc: {np.mean(acc_lst)}, nmi: {np.mean(nmi_lst)}")
 
             if warmup_step <= total_wamup_steps:
                 print("warming up")
